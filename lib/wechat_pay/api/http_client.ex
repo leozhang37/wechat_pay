@@ -141,6 +141,18 @@ defmodule WechatPay.API.HTTPClient do
     {:ok, data}
   end
 
+  defp process_result_field(%{result_code: "FAIL", err_code: "USERPAYING", err_code_des: desc}) do
+    {:error, %Error{reason: "Code: USERPAYING, msg: #{desc}", type: :unkown_result}}
+  end
+
+  defp process_result_field(%{result_code: "FAIL", err_code: "BANKERROR", err_code_des: desc}) do
+    {:error, %Error{reason: "Code: BANKERROR, msg: #{desc}", type: :unkown_result}}
+  end
+
+  defp process_result_field(%{result_code: "FAIL", err_code: "SYSTEMERROR", err_code_des: desc}) do
+    {:error, %Error{reason: "Code: SYSTEMERROR, msg: #{desc}", type: :unkown_result}}
+  end
+
   defp process_result_field(%{result_code: "FAIL", err_code: code, err_code_des: desc}) do
     {:error, %Error{reason: "Code: #{code}, msg: #{desc}", type: :failed_result}}
   end

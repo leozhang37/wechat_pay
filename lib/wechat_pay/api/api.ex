@@ -231,6 +231,64 @@ defmodule WechatPay.API do
     )
   end
 
+  @doc """
+  micropay
+
+  ## Examples
+
+      iex> WechatPay.API.micropay(%{
+        device_info: "WEB",
+        body: "Wechat-666",
+        attach: nil,
+        out_trade_no: "1415757673",
+        fee_type: "CNY",
+        total_fee: 709,
+        auth_code: "120061098828009406",
+        spbill_create_ip: "127.0.0.1",
+        
+        
+      })
+      ...> {:ok, data}
+  """
+  @spec micropay(Client.t(), map, keyword) ::
+          {:ok, map} | {:error, WechatPay.Error.t() | HTTPoison.Error.t()}
+  def micropay(client, attrs, options \\ []) do
+    with {:ok, data} <- HTTPClient.post(client, "pay/micropay", attrs, options),
+         :ok <- Signature.verify(data, client.api_key, client.sign_type) do
+      {:ok, data}
+    end
+  end
+
+  @doc """
+  micropay reverse order
+
+  ## Examples
+
+      iex> WechatPay.API.micropay(%{
+        
+        out_trade_no: "1415757673",
+        
+        
+      })
+      ...> {:ok, data}
+  """
+  @spec reverse(Client.t(), map(), keyword()) ::
+          {:ok, map} | {:error, WechatPay.Error.t() | HTTPoison.Error.t()}
+  def reverse(client, attrs, options \\ []) do
+    ssl = client |> load_ssl()
+
+    with {:ok, data} <-
+           HTTPClient.post(
+             client,
+             "secapi/pay/reverse",
+             attrs,
+             Keyword.merge([ssl: ssl], options)
+           ),
+         :ok <- Signature.verify(data, client.api_key, client.sign_type) do
+      {:ok, data}
+    end
+  end
+
   defp decode_public(nil), do: nil
 
   defp decode_public(pem) do

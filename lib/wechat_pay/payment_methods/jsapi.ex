@@ -132,7 +132,7 @@ defmodule WechatPay.JSAPI do
   def generate_pay_request(client, prepay_id) do
     data = %{
       "appId" => client.app_id,
-      "timeStamp" => Integer.to_string(:os.system_time()),
+      "timeStamp" => Integer.to_string(:os.system_time(:seconds)),
       "nonceStr" => NonceStr.generate(),
       "package" => "prepay_id=#{prepay_id}",
       "signType" => client.sign_type
